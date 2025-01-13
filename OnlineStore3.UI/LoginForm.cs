@@ -40,8 +40,10 @@ namespace OnlineStore3.UI
             }
             else
             {
+                int userid = Convert.ToInt32(users.Max(id => id.UserId)) + 1;
                 var newUser = new User
                 {
+                    UserId = userid,
                     Username = username,
                     FullName = fullName,
                     Password = password,

@@ -26,6 +26,7 @@ namespace OnlineStore3.UI
             {
                 Console.WriteLine("Invalid option selected.");
             }
+            Console.ReadKey();
         }
     }
 }

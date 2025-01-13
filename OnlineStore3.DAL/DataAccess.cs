@@ -34,6 +34,7 @@ public class DataAccess
             {
                 users.Add(new User
                 {
+                    UserId = Convert.ToInt32(row["userid"]),
                     FullName = row["fullname"].ToString(),
                     Username = row["username"].ToString(),
                     Password = row["password"].ToString(),
@@ -109,8 +110,21 @@ public class DataAccess
         }
         return orders;
     }
-    public void updateUsers(List<User> newuser)
+    public void updateUsers(DataTable updatedusers)
     {
-
+        using (SqlConnection connection = new SqlConnection (connectionString))
+        {
+            string query = "select * from users";
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+            SqlCommandBuilder cmd = new SqlCommandBuilder(dataAdapter);
+            try
+            {
+                dataAdapter.Update(updatedusers);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 }
