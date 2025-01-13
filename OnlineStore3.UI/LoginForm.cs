@@ -27,32 +27,37 @@ namespace OnlineStore3.UI
         public static void Register(List<User> users)
         {
             Console.Write("Enter Username: ");
-            string username = Console.ReadLine();            
+            string username = Console.ReadLine();
+            if (users.Any(u => u.Username == username))
+            {
+                Console.WriteLine($"A user with the username '{username}' already exists.");
+                return; 
+            }
             Console.Write("Enter Full Name: ");
             string fullName = Console.ReadLine();
             Console.Write("Enter Password: ");
             string password = Console.ReadLine();
             Console.Write("Enter Mobile Number: ");
             string mobileNumber = Console.ReadLine();
-            if (users.Any(u => u.Username == username))
+            int userId = users.Count > 0 ? users.Max(u => u.UserId) + 1 : 1;
+            var newUser = new User
             {
-                Console.WriteLine($"A user with the username '{username}' already exists.");
-            }
-            else
+                UserId = userId,
+                Username = username,
+                FullName = fullName,
+                Password = password,
+                MobileNumber = mobileNumber
+            };
+            users.Add(newUser);
+            var BLL = new BusinessLogic();
+            try
             {
-                int userid = Convert.ToInt32(users.Max(id => id.UserId)) + 1;
-                var newUser = new User
-                {
-                    UserId = userid,
-                    Username = username,
-                    FullName = fullName,
-                    Password = password,
-                    MobileNumber = mobileNumber
-                };
-                users.Add(newUser);
+                BLL.UpdateUsers(users);
                 Console.WriteLine($"User '{username}' registered successfully.");
-                BusinessLogic BAL = new BusinessLogic();
-                BAL.updateUsers(users);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating users: {ex.Message}");
             }
         }
     }

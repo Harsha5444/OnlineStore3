@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 public class DataAccess
 {
@@ -110,21 +111,40 @@ public class DataAccess
         }
         return orders;
     }
-    public void updateUsers(DataTable updatedusers)
+    public void UpdateUsers(List<User> users)
     {
-        using (SqlConnection connection = new SqlConnection (connectionString))
+        var existingUsers = GetUsers();
+        var newUsers = users.Where(u => !existingUsers.Any(e => e.Username == u.Username)).ToList();
+        if (newUsers.Count == 0)
         {
-            string query = "select * from users";
+            Console.WriteLine("No new users to add.");
+            return;
+        }
+        DataTable dt = new DataTable();
+        dt.Columns.Add("userid", typeof(int));
+        dt.Columns.Add("fullname", typeof(string));
+        dt.Columns.Add("username", typeof(string));
+        dt.Columns.Add("password", typeof(string));
+        dt.Columns.Add("mobilenumber", typeof(string));
+        foreach (var user in newUsers)
+        {
+            dt.Rows.Add(user.UserId, user.FullName, user.Username, user.Password, user.MobileNumber);
+        }
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        {
+            string query = "SELECT * FROM users";
             SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
             SqlCommandBuilder cmd = new SqlCommandBuilder(dataAdapter);
             try
             {
-                dataAdapter.Update(updatedusers);
+                dataAdapter.Update(dt);
+                Console.WriteLine("Users updated successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error updating users: {ex.Message}");
             }
         }
     }
+
 }
