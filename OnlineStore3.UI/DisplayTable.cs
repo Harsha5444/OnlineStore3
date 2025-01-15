@@ -31,7 +31,6 @@ namespace OnlineStore3.UI
                 }
                 Console.WriteLine();
             }
-
             Console.WriteLine(new string('-', 20 * properties.Length));
             Console.WriteLine();
         }

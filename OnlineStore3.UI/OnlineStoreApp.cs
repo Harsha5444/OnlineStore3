@@ -4,11 +4,11 @@ namespace OnlineStore3.UI
 {
     internal class OnlineStoreApp
     {
-        static void Main(string[] args)
+        static void Main(string[] args) 
         {
             BusinessLogic BLL = new BusinessLogic();
             var (users, products, cart, orders) = BLL.GetAllData();
-
+            DisplayTable.DisplayList(users,"Users");
             Console.WriteLine("Welcome to Online Store!");
             Console.WriteLine("Please choose an option: ");
             Console.WriteLine("1. Login");

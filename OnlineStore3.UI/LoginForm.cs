@@ -18,6 +18,7 @@ namespace OnlineStore3.UI
             if (user != null)
             {
                 Console.WriteLine($"Login Successful, Welcome '{user.Username}'");
+                Session.Username = username;
             }
             else
             {
@@ -53,7 +54,7 @@ namespace OnlineStore3.UI
             try
             {
                 BLL.UpdateUsers(users);
-                Console.WriteLine($"User '{username}' registered successfully.");
+                Session.Username = username;    
             }
             catch (Exception ex)
             {

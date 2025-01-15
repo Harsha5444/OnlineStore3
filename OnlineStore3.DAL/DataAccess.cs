@@ -115,36 +115,33 @@ public class DataAccess
     {
         var existingUsers = GetUsers();
         var newUsers = users.Where(u => !existingUsers.Any(e => e.Username == u.Username)).ToList();
-        if (newUsers.Count == 0)
-        {
-            Console.WriteLine("No new users to add.");
-            return;
-        }
-        DataTable dt = new DataTable();
-        dt.Columns.Add("userid", typeof(int));
-        dt.Columns.Add("fullname", typeof(string));
-        dt.Columns.Add("username", typeof(string));
-        dt.Columns.Add("password", typeof(string));
-        dt.Columns.Add("mobilenumber", typeof(string));
+        DataSet ds = new DataSet();
+        DataTable dt = new DataTable("Users");
+        dt.Columns.Add("UserId");
+        dt.Columns.Add("FullName");
+        dt.Columns.Add("Username");
+        dt.Columns.Add("Password");
+        dt.Columns.Add("MobileNumber");
+        ds.Tables.Add(dt);
         foreach (var user in newUsers)
         {
             dt.Rows.Add(user.UserId, user.FullName, user.Username, user.Password, user.MobileNumber);
         }
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MiniProjectDB"].ConnectionString))
         {
-            string query = "SELECT * FROM users";
-            SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
-            SqlCommandBuilder cmd = new SqlCommandBuilder(dataAdapter);
-            try
+            using (var da = new SqlDataAdapter("SELECT * FROM Users", conn))
             {
-                dataAdapter.Update(dt);
-                Console.WriteLine("Users updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error updating users: {ex.Message}");
+                var commandBuilder = new SqlCommandBuilder(da);
+                try
+                {
+                    da.Update(ds, "Users");
+                    Console.WriteLine("User registered successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error updating users: {ex.Message}");
+                }
             }
         }
     }
-
 }
