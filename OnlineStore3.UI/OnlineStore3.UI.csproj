@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DisplayTable.cs" />
+    <Compile Include="Homepage.cs" />
     <Compile Include="LoginForm.cs" />
     <Compile Include="OnlineStoreApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

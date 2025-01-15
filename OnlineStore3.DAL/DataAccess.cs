@@ -115,14 +115,14 @@ public class DataAccess
     {
         var existingUsers = GetUsers();
         var newUsers = users.Where(u => !existingUsers.Any(e => e.Username == u.Username)).ToList();
-        DataSet ds = new DataSet();
+        //DataSet ds = new DataSet();
         DataTable dt = new DataTable("Users");
         dt.Columns.Add("UserId");
         dt.Columns.Add("FullName");
         dt.Columns.Add("Username");
         dt.Columns.Add("Password");
         dt.Columns.Add("MobileNumber");
-        ds.Tables.Add(dt);
+        //ds.Tables.Add(dt);
         foreach (var user in newUsers)
         {
             dt.Rows.Add(user.UserId, user.FullName, user.Username, user.Password, user.MobileNumber);
@@ -134,7 +134,7 @@ public class DataAccess
                 var commandBuilder = new SqlCommandBuilder(da);
                 try
                 {
-                    da.Update(ds, "Users");
+                    da.Update(dt);
                     Console.WriteLine("User registered successfully.");
                 }
                 catch (Exception ex)

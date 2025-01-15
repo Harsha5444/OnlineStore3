@@ -8,6 +8,7 @@ namespace OnlineStore3.UI
     {
         public static void DisplayList<T>(List<T> list, string tableName)
         {
+            Console.Clear();
             if (list == null || list.Count == 0)
             {
                 Console.WriteLine($"No data available in {tableName}.");

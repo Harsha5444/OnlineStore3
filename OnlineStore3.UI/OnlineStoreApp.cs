@@ -8,7 +8,8 @@ namespace OnlineStore3.UI
         {
             BusinessLogic BLL = new BusinessLogic();
             var (users, products, cart, orders) = BLL.GetAllData();
-            DisplayTable.DisplayList(users,"Users");
+            
+            //DisplayTable.DisplayList(users,"Users");
             Console.WriteLine("Welcome to Online Store!");
             Console.WriteLine("Please choose an option: ");
             Console.WriteLine("1. Login");
@@ -16,11 +17,13 @@ namespace OnlineStore3.UI
             string choice = Console.ReadLine();
             if (choice == "1")
             {
-                LoginForm.Login(users);
+                LoginForm.Login(users, BLL);
+                //Homepage menu = new Homepage();
+                //menu.Menu();
             }
             else if (choice == "2")
             {
-                LoginForm.Register(users);
+                LoginForm.Register(users, BLL);
             }
             else
             {

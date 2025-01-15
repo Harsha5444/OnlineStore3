@@ -1,23 +1,25 @@
-﻿using System;
+﻿using OnlineStore3.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using OnlineStore3.Models;
 
 namespace OnlineStore3.UI
 {
     public class LoginForm
     {
-        public static void Login(List<User> users)
+        public static void Login(List<User> users, BusinessLogic BLL)
         {
             Console.Write("Enter Username: ");
             string username = Console.ReadLine();
             Console.Write("Enter Password: ");
             string password = Console.ReadLine();
-
             var user = users.Where(u => u.Username == username && u.Password == password).FirstOrDefault();
             if (user != null)
             {
-                Console.WriteLine($"Login Successful, Welcome '{user.Username}'");
+                Console.Clear();
+                Console.WriteLine($"Login Successful, Welcome '{user.Username}'\n");
+                Homepage menu = new Homepage();
+                menu.Menu(BLL);
                 Session.Username = username;
             }
             else
@@ -25,14 +27,14 @@ namespace OnlineStore3.UI
                 Console.WriteLine($"No credentials found for user '{username}'. Please check your username or password.");
             }
         }
-        public static void Register(List<User> users)
+        public static void Register(List<User> users, BusinessLogic BLL)
         {
             Console.Write("Enter Username: ");
             string username = Console.ReadLine();
             if (users.Any(u => u.Username == username))
             {
                 Console.WriteLine($"A user with the username '{username}' already exists.");
-                return; 
+                return;
             }
             Console.Write("Enter Full Name: ");
             string fullName = Console.ReadLine();
@@ -40,7 +42,7 @@ namespace OnlineStore3.UI
             string password = Console.ReadLine();
             Console.Write("Enter Mobile Number: ");
             string mobileNumber = Console.ReadLine();
-            int userId = users.Count > 0 ? users.Max(u => u.UserId) + 1 : 1;
+            int userId = users.Max(u => u.UserId) + 1;
             var newUser = new User
             {
                 UserId = userId,
@@ -50,11 +52,12 @@ namespace OnlineStore3.UI
                 MobileNumber = mobileNumber
             };
             users.Add(newUser);
-            var BLL = new BusinessLogic();
             try
             {
                 BLL.UpdateUsers(users);
-                Session.Username = username;    
+                Homepage menu = new Homepage();
+                menu.Menu(BLL);
+                Session.Username = username;
             }
             catch (Exception ex)
             {
