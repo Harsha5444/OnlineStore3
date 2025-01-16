@@ -144,6 +144,81 @@ public class DataAccess
             }
         }
     }
+    public void UpdateProducts(List<Product> products)
+    {
+        DataTable dt = new DataTable("Products");
+        dt.Columns.Add("ProductId", typeof(int));
+        dt.Columns.Add("ProductName", typeof(string));
+        dt.Columns.Add("Price", typeof(int));
+        dt.Columns.Add("QuantityAvailable", typeof(int));
+        foreach (var product in products)
+        {
+            dt.Rows.Add(product.ProductId, product.ProductName, product.Price, product.QuantityAvailable);
+        }
+        foreach (DataRow row in dt.Rows)
+        {
+            row.SetModified();
+        }
+        using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MiniProjectDB"].ConnectionString))
+        {
+            using (var da = new SqlDataAdapter("SELECT * FROM Products", conn))
+            {
+                var commandBuilder = new SqlCommandBuilder(da);
+                try
+                {
+                    da.Update(dt);
+                    Console.WriteLine("Products updated successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error updating products: {ex.Message}");
+                }
+            }
+        }
+    }
 
-
+    public void UpdateOrders(List<Orders> orders)
+    {
+        var existingOrders = GetOrders();
+        var newOrders = orders.Where(o =>
+            !existingOrders.Any(existingOrder =>
+                existingOrder.Username == o.Username &&
+                existingOrder.TotalCost == o.TotalCost &&
+                existingOrder.OrderDate == o.OrderDate &&
+                existingOrder.OrderDetails == o.OrderDetails
+            )
+        ).ToList();
+        if (newOrders.Any())
+        {
+            DataTable dt = new DataTable("Orders");
+            dt.Columns.Add("Username");
+            dt.Columns.Add("TotalCost");
+            dt.Columns.Add("OrderDate");
+            dt.Columns.Add("OrderDetails");
+            foreach (var order in newOrders)
+            {
+                dt.Rows.Add(order.Username, order.TotalCost, order.OrderDate, order.OrderDetails);
+            }
+            using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MiniProjectDB"].ConnectionString))
+            {
+                using (var da = new SqlDataAdapter("SELECT * FROM Orders", conn))
+                {
+                    var commandBuilder = new SqlCommandBuilder(da);
+                    try
+                    {
+                        da.Update(dt);
+                        Console.WriteLine("New orders added successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error adding new orders: {ex.Message}");
+                    }
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("No new orders to update.");
+        }
+    }
 }

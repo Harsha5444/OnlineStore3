@@ -15,4 +15,12 @@ public class BusinessLogic
     {
         DAL.UpdateUsers(users);
     }
+    public void UpdateProducts(List<Product> products)
+    {
+        DAL.UpdateProducts(products);
+    }
+    public void UpdateOrders(List<Orders> orders)
+    {
+        DAL.UpdateOrders(orders);
+    }
 }

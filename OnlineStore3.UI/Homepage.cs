@@ -35,7 +35,7 @@ namespace OnlineStore3.UI
                         DisplayTable.DisplayList(cart, "Cart");
                         goto start;
                     case "4":
-                        Checkout(products, orders, cart);
+                        Checkout(products, orders, cart, BLL);
                         break;
                     case "5":
                         return;
@@ -86,9 +86,44 @@ namespace OnlineStore3.UI
             DisplayTable.DisplayList(cart, "Cart");
             Console.WriteLine($"Successfully added {quantity} of {prow.ProductName} to the cart.\n");
         }
-        public void Checkout(List<Product> products, List<Orders> orders, List<Cart> cart)
+        public void Checkout(List<Product> products, List<Orders> orders, List<Cart> cart, BusinessLogic BLL)
         {
+            if (cart == null || cart.Count == 0)
+            {
+                Console.WriteLine("Your cart is empty. Cannot proceed with checkout.");
+                Console.WriteLine("\nPress any key to return to the menu.");
+                Console.ReadKey();
+                return;
+            }
+            decimal totalCost = cart.Sum(item => item.FinalPrice);
+            var orderDetailsList = cart.Select(cartItem =>
+            {
+                var product = products.FirstOrDefault(p => p.ProductName == cartItem.ProductName);
+                string productName = product.ProductName;
+                int quantity = cartItem.Quantity;
+                return $"{productName} x {quantity}";
+            }).ToList();
 
+            string orderDetails = string.Join(", ", orderDetailsList);
+            var newOrder = new Orders
+            {
+                Username = Session.Username,
+                TotalCost = totalCost,
+                OrderDate = DateTime.Now,
+                OrderDetails = orderDetails
+            };
+            orders.Add(newOrder);
+            BLL.UpdateProducts(products);
+            BLL.UpdateOrders(orders);
+            cart.Clear();
+            Console.Clear();
+            Console.WriteLine("********** Order Confirmation **********");
+            Console.WriteLine($"Order placed successfully by {Session.Username}.");
+            Console.WriteLine($"Total Cost: {totalCost}");
+            Console.WriteLine($"Order Date: {DateTime.Now}");
+            Console.WriteLine($"Order Details: {orderDetails}");
+            Console.WriteLine("\nPress any key to return to the homepage.");
+            Console.ReadKey();
         }
     }
 }
