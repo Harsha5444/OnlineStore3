@@ -18,9 +18,9 @@ namespace OnlineStore3.UI
             {
                 Console.Clear();
                 Console.WriteLine($"Login Successful, Welcome '{user.Username}'\n");
+                Session.Username = username;
                 Homepage menu = new Homepage();
                 menu.Menu(BLL);
-                Session.Username = username;
             }
             else
             {
@@ -55,9 +55,9 @@ namespace OnlineStore3.UI
             try
             {
                 BLL.UpdateUsers(users);
+                Session.Username = username;
                 Homepage menu = new Homepage();
                 menu.Menu(BLL);
-                Session.Username = username;
             }
             catch (Exception ex)
             {

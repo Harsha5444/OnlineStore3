@@ -69,25 +69,25 @@ public class DataAccess
     }
     private List<Cart> GetCarts()
     {
-        List<Cart> carts = new List<Cart>();
-        using (SqlConnection connection = new SqlConnection(connectionString))
-        {
-            string query = "SELECT * FROM cart";
-            SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
-            DataTable dt = new DataTable();
-            dataAdapter.Fill(dt);
-            foreach (DataRow row in dt.Rows)
-            {
-                carts.Add(new Cart
-                {
-                    ProductId = Convert.ToInt32(row["productid"]),
-                    Username = row["username"].ToString(),
-                    Quantity = Convert.ToInt32(row["quantity"]),
-                    FinalPrice = Convert.ToInt32(row["finalprice"])
-                });
-            }
-        }
-        return carts;
+        List<Cart> cart = new List<Cart>();
+        //using (SqlConnection connection = new SqlConnection(connectionString))
+        //{
+        //    string query = "SELECT * FROM cart";
+        //    SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+        //    DataTable dt = new DataTable();
+        //    dataAdapter.Fill(dt);
+        //    foreach (DataRow row in dt.Rows)
+        //    {
+        //        carts.Add(new Cart
+        //        {
+        //            ProductId = Convert.ToInt32(row["productid"]),
+        //            Username = row["username"].ToString(),
+        //            Quantity = Convert.ToInt32(row["quantity"]),
+        //            FinalPrice = Convert.ToInt32(row["finalprice"])
+        //        });
+        //    }
+        //}
+        return cart;
     }
     private List<Orders> GetOrders()
     {
@@ -144,4 +144,6 @@ public class DataAccess
             }
         }
     }
+
+
 }
