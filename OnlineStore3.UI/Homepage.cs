@@ -11,6 +11,7 @@ namespace OnlineStore3.UI
         public void Menu(BusinessLogic BLL)
         {
             var (users, products, cart, orders) = BLL.GetAllData();
+            Dictionary<int, int> cartProducts = new Dictionary<int, int>();
             while (true)
             {
                 Console.WriteLine("********** Welcome to the Home Page **********");
@@ -29,13 +30,13 @@ namespace OnlineStore3.UI
                         DisplayTable.DisplayList(products, "Products");
                         goto start;
                     case "2":
-                        AddToCart(cart, products);
+                        AddToCart(cart, products, cartProducts);
                         break;
                     case "3":
                         DisplayTable.DisplayList(cart, "Cart");
                         goto start;
                     case "4":
-                        Checkout(products, orders, cart, BLL);
+                        Checkout(products, orders, cart, BLL, cartProducts);
                         break;
                     case "5":
                         return;
@@ -46,7 +47,7 @@ namespace OnlineStore3.UI
                 }
             }
         }
-        public void AddToCart(List<Cart> cart, List<Product> products)
+        public void AddToCart(List<Cart> cart, List<Product> products, Dictionary<int, int> cartProducts)
         {
             Console.Clear();
             Console.WriteLine("********** Add to Cart **********");
@@ -83,10 +84,11 @@ namespace OnlineStore3.UI
                 FinalPrice = finalPrice
             });
             prow.QuantityAvailable -= quantity;
+            cartProducts.Add(productId,quantity);
             DisplayTable.DisplayList(cart, "Cart");
             Console.WriteLine($"Successfully added {quantity} of {prow.ProductName} to the cart.\n");
         }
-        public void Checkout(List<Product> products, List<Orders> orders, List<Cart> cart, BusinessLogic BLL)
+        public void Checkout(List<Product> products, List<Orders> orders, List<Cart> cart, BusinessLogic BLL, Dictionary<int, int> cartProducts)
         {
             if (cart == null || cart.Count == 0)
             {
@@ -113,7 +115,7 @@ namespace OnlineStore3.UI
                 OrderDetails = orderDetails
             };
             orders.Add(newOrder);
-            BLL.UpdateProducts(products);
+            BLL.UpdateProducts(cartProducts);
             BLL.UpdateOrders(orders);
             cart.Clear();
             Console.Clear();

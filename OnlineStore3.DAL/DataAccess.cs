@@ -14,10 +14,11 @@ public class DataAccess
     List<Product> products = new List<Product>();
     List<Cart> carts = new List<Cart>();
     List<Orders> orders = new List<Orders>();
+    DataTable pt = new DataTable();
     public (List<User>, List<Product>, List<Cart>, List<Orders>) GetAllData()
     {
         users = GetUsers();
-        products = GetProducts();
+        (products,pt) = GetProducts();
         carts = GetCarts();
         orders = GetOrders();
         return (users, products, carts, orders);
@@ -45,14 +46,15 @@ public class DataAccess
         }
         return users;
     }
-    private List<Product> GetProducts()
+    private (List<Product>, DataTable) GetProducts()
     {
+        DataTable dt = new DataTable();
         List<Product> products = new List<Product>();
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
             string query = "SELECT * FROM products";
             SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
-            DataTable dt = new DataTable();
+            
             dataAdapter.Fill(dt);
             foreach (DataRow row in dt.Rows)
             {
@@ -65,7 +67,7 @@ public class DataAccess
                 });
             }
         }
-        return products;
+        return (products,dt);
     }
     private List<Cart> GetCarts()
     {
@@ -144,29 +146,32 @@ public class DataAccess
             }
         }
     }
-    public void UpdateProducts(List<Product> products)
+    public void UpdateProducts(Dictionary<int, int> cartProducts)
     {
-        DataTable dt = new DataTable("Products");
-        dt.Columns.Add("ProductId", typeof(int));
-        dt.Columns.Add("ProductName", typeof(string));
-        dt.Columns.Add("Price", typeof(int));
-        dt.Columns.Add("QuantityAvailable", typeof(int));
-        foreach (var product in products)
+        if (pt == null)
         {
-            dt.Rows.Add(product.ProductId, product.ProductName, product.Price, product.QuantityAvailable);
-        }
-        foreach (DataRow row in dt.Rows)
-        {
-            row.SetModified();
+            Console.WriteLine("Product table is not initialized.");
+            return;
         }
         using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MiniProjectDB"].ConnectionString))
         {
             using (var da = new SqlDataAdapter("SELECT * FROM Products", conn))
             {
                 var commandBuilder = new SqlCommandBuilder(da);
+
                 try
                 {
-                    da.Update(dt);
+                    foreach (var item in cartProducts)
+                    {
+                        int productId = item.Key;
+                        int quantityToSubtract = item.Value;
+                        var row = pt.AsEnumerable().FirstOrDefault(r => (int)r["ProductID"] == productId);
+                        if (row != null)
+                        {
+                            row["QuantityAvailable"] = (int)row["QuantityAvailable"] - quantityToSubtract;
+                        }
+                    }
+                    da.Update(pt);
                     Console.WriteLine("Products updated successfully.");
                 }
                 catch (Exception ex)
@@ -176,6 +181,7 @@ public class DataAccess
             }
         }
     }
+
 
     public void UpdateOrders(List<Orders> orders)
     {

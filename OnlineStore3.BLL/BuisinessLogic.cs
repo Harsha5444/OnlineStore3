@@ -15,9 +15,9 @@ public class BusinessLogic
     {
         DAL.UpdateUsers(users);
     }
-    public void UpdateProducts(List<Product> products)
+    public void UpdateProducts(Dictionary<int, int> cartProducts)
     {
-        DAL.UpdateProducts(products);
+        DAL.UpdateProducts(cartProducts);
     }
     public void UpdateOrders(List<Orders> orders)
     {
